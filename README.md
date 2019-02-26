@@ -5,12 +5,10 @@
 ## TL;DR;
 
 ```console
-$ git clone https://github.com/cdwv/powerdns-helm
-$ cd powerdns-helm
+$ git clone https://github.com/hmcts/chart-powerdns
+$ cd chart-powerdns
 $ helm install .
 ```
-
-> Note: This will leave you with a PowerDNS server deployed to your k8s cluster. You will also need to configure some means of accesibility from the outside world for the DNS server to be accesible. You can do it e.g. by modifying your nginx-ingress-controller.
 
 ## Installing the Chart
 
@@ -55,29 +53,3 @@ The command removes all the Kubernetes components associated with the chart and 
 | `nodeSelector`             | Node labels for pod assignment | `{}` |
 | `tolerations`              | Toleration labels for pod assignment | `[]` |
 | `affinity`                 | Affinity settings for pod assignment | `{}` |
-| `mariadb.enabled`                    | Deploy MariaDB container(s)                | `true`     |
-| `mariadb.mariadbRootPassword`        | MariaDB admin password                     | `nil`      |
-| `mariadb.mariadbDatabase`            | Database name to create                    | `powerdns` |
-| `mariadb.mariadbUser`                | Database user to create                    | `powerdns` |
-| `mariadb.mariadbPassword`            | Password for the database                  | `powerdns` |
-| `mariadb.persistence.enabled`                | Enable persistence using PVC               | `false`   |
-| `mariadb.persistence.existingClaim`          | Enable persistence using an existing PVC   | `nil`                                                      |
-| `mariadb.persistence.storageClass`           | PVC Storage Class                          | `nil` (uses alpha storage class annotation)                |
-| `mariadb.persistence.accessMode`             | PVC Access Mode                            | `ReadWriteOnce`                                            |
-| `mariadb.persistence.size`                   | PVC Storage Request                        | `2Gi`   |
-
-
-# Modifications to nginx-ingress
-
-General steps are outlined below. You can consult the files in the nginx-ingress folder for more information.
-
-1. Patch the nginx-ingress deployment to add UDP services (--udp-services-configmap=nginx-ingress/udp-ports)
-2. Add udp-ports configmap to nginx-ingress namespace
-2. Add a UDP loadbalancer service
-
-# TODO
-
-* [ ] - Make sure all kubernetes/charts [technical requirements](https://github.com/kubernetes/charts/blob/master/CONTRIBUTING.md#technical-requirements) are met
-* [ ] - Make sure all kubernetes/charts [documentation requirements](https://github.com/kubernetes/charts/blob/master/CONTRIBUTING.md#documentation-requirements) are met
-* [ ] - Add more pdns configuration options
-* [ ] - Support secrets
