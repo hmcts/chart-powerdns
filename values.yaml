@@ -3,48 +3,58 @@
 # Declare variables to be passed into your templates.
 
 pdns:
-    api:
-        enabled: yes
-        key: PowerDNSAPI
-    webserver:
-        allowFrom: 0.0.0.0/0
-    dnsupdate:
-        enabled: no
+  api:
+      enabled: yes
+      key: PowerDNSAPI
+  webserver:
+      allowFrom: 0.0.0.0/0
+  dnsupdate:
+      enabled: no
 
 replicaCount: 1
 
 image:
-  repository: psitrax/powerdns
-  tag: 4.1.2
+  repository: rpedev.azurecr.io/psitrax/powerdns
+  tag: 4.1.5r2
   pullPolicy: IfNotPresent
 
-service:
-  type: ClusterIP
+tcpService:
+  type: LoadBalancer
+  loadBalancerIP: 10.160.180.2
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    # hopefully will work in next version of 1.12.x https://github.com/kubernetes/kubernetes/pull/74494
+    service.beta.kubernetes.io/azure-load-balancer-mixed-protocols: "true"
+
+udpService:
+  type: LoadBalancer
+  loadBalancerIP: 10.160.180.3
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+apiService:
+  annotations: {}
 
 ingress:
   enabled: true
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
+  annotations:
+    kubernetes.io/ingress.class: traefik
     # kubernetes.io/tls-acme: "true"
   path: /
   hosts:
-    - chart-example.local
+    - dns.platform.hmcts.net
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+resources:
+  limits:
+   cpu: 100m
+   memory: 1024Mi
+  requests:
+   cpu: 100m
+   memory: 128Mi
 
 nodeSelector: {}
 
@@ -52,50 +62,16 @@ tolerations: []
 
 affinity: {}
 
-##
-## MariaDB chart configuration
-##
-mariadb:
-  ## Whether to use the database specified as a requirement or not.
-  ## If you want to use a MariaDB database deployed to Kubernetes instead of
-  ## Azure Database for MySQL, set this to true.
-  enabled: true
+environment:
+  AUTOCONF: postgres
+  PGSQL_USER: pdns
+  PGSQL_PASS: pdns
+  PGSQL_HOST: powerdns-postgresql
+  PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
 
-  ## MariaDB admin password
-  ## ref: https://github.com/bitnami/bitnami-docker-mariadb/blob/master/README.md#setting-the-root-password-on-first-run
-  ##
-  # mariadbRootPassword:
-
-  ## Create a database
-  ## ref: https://github.com/bitnami/bitnami-docker-mariadb/blob/master/README.md#creating-a-database-on-first-run
-  ##
-  mariadbDatabase: powerdns
-
-  ## Create a database user
-  ## ref: https://github.com/bitnami/bitnami-docker-mariadb/blob/master/README.md#creating-a-database-user-on-first-run
-  ##
-  mariadbUser: powerdns
-
-  ## Password for mariadbUser
-  ## ref: https://github.com/bitnami/bitnami-docker-mariadb/blob/master/README.md#creating-a-database-user-on-first-run
-  ##
-  mariadbPassword: powerdns
-
-  ## Enable persistence using Persistent Volume Claims
-  ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-  ##
-  ## Enable persistence using Persistent Volume Claims
-  ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
-  ##
+postgresql:
+  postgresqlUsername: pdns
+  postgresqlPassword: pdns
+  postgresqlDatabase: pdns
   persistence:
     enabled: false
-    ## mariadb data Persistent Volume Storage Class
-    ## If defined, storageClassName: <storageClass>
-    ## If set to "-", storageClassName: "", which disables dynamic provisioning
-    ## If undefined (the default) or set to null, no storageClassName spec is
-    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
-    ##   GKE, AWS & OpenStack)
-    ##
-    # storageClass: "-"
-    accessMode: ReadWriteOnce
-    size: 2Gi

@@ -23,18 +23,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["/entrypoint.sh"]
-          args: ["--api={{ .Values.pdns.api.enabled }}", "--api-key={{ .Values.pdns.api.key }}", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from={{ .Values.pdns.webserver.allowFrom }}", "--slave=yes", "--dnsupdate={{ .Values.pdns.dnsupdate.enabled }}"]
+          args: ["--api={{ .Values.pdns.api.enabled }}", "--api-key={{ .Values.pdns.api.key }}", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from={{ .Values.pdns.webserver.allowFrom }}", "--dnsupdate={{ .Values.pdns.dnsupdate.enabled }}"]
           env:
-              - name: MYSQL_HOST
-                value: {{ template "mariadb.fullname" . }}
-              - name: MYSQL_USER
-                value: "root"
-                value: {{ .Values.mariadb.mariadbUser | quote }}
-              - name: MYSQL_PASS
-                value: {{ .Values.mariadb.mariadbPassword | quote }}
-              - name: MYSQL_DB
-                value: {{ .Values.mariadb.mariadbDatabase | quote }}
+{{- (include "pdns.environment" .Values.environment) | indent 10 }}
           ports:
             - name: dns-udp
               containerPort: 53
