@@ -1,0 +1,26 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "pdns.fullname" . }}-ui
+{{- with .Values.apiService.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/name: {{ template "pdns.name" . }}-ui
+    helm.sh/chart: {{ template "pdns.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ template "pdns.name" . }}-ui
+spec:
+  ports:
+    - name: ui
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  selector:
+    app.kubernetes.io/name: {{ template "pdns.name" . }}-ui
+    release: {{ .Release.Name }}

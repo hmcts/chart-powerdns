@@ -1,6 +1,5 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "pdns.fullname" . -}}
-{{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -17,22 +16,24 @@ metadata:
 spec:
 {{- if .Values.ingress.tls }}
   tls:
-  {{- range .Values.ingress.tls }}
     - hosts:
-      {{- range .hosts }}
-        - {{ . }}
-      {{- end }}
-      secretName: {{ .secretName }}
-  {{- end }}
+        - {{ .Values.ingress.uiHostName }}
+        - {{ .Values.ingress.apiHostName }}
+      secretName: {{ .Values.ingress.tls.secretName }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ . }}
+    - host: {{ .Values.ingress.apiHostName }}
       http:
         paths:
-          - path: {{ $ingressPath }}
+          - path: /
             backend:
               serviceName: {{ $fullName }}-api
               servicePort: api
-  {{- end }}
+    - host: {{ .Values.ingress.uiHostName }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}-ui
+              servicePort: ui
 {{- end }}
