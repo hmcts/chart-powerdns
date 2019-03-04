@@ -4,20 +4,20 @@ kind: Deployment
 metadata:
   name: {{ template "pdns.fullname" . }}
   labels:
-    app: {{ template "pdns.name" . }}
-    chart: {{ template "pdns.chart" . }}
+    app.kubernetes.io/name: {{ template "pdns.fullname" . }}
+    helm.sh/chart: {{ template "pdns.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "pdns.name" . }}
+      app.kubernetes.io/name: {{ template "pdns.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "pdns.name" . }}
+        app.kubernetes.io/name: {{ template "pdns.fullname" . }}
         release: {{ .Release.Name }}
     spec:
       containers:

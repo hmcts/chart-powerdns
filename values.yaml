@@ -39,8 +39,6 @@ ui:
     SAML_GROUP_ADMIN_NAME: '356b57d8-84f4-457a-b49e-9500820c0b2d'
     SAML_GROUP_TO_ACCOUNT_MAPPING: '9189d86a-e260-4c3d-8227-803123cdce84=cnp'
     SAML_SP_ENTITY_ID: 'https://rpe899.onmicrosoft.com/384ce2b5-fbd1-43db-9621-80394401edfb'
-    PDNS_HOST: 'pdns'
-    PDNS_PORT: '8081'
     PDA_SITE_NAME: 'HMCTS'
 
 image:
@@ -48,29 +46,19 @@ image:
   tag: 4.1.5r2
   pullPolicy: IfNotPresent
 
-tcpService:
+service:
   type: LoadBalancer
   loadBalancerIP: 10.160.180.2
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     # hopefully will work in next version of 1.12.x https://github.com/kubernetes/kubernetes/pull/74494
-    service.beta.kubernetes.io/azure-load-balancer-mixed-protocols: "true"
-
-udpService:
-  type: LoadBalancer
-  loadBalancerIP: 10.160.180.3
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-
-apiService:
-  annotations: {}
+   # service.beta.kubernetes.io/azure-load-balancer-mixed-protocols: "true"
 
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: traefik
-  uiHostname: dns.platform.hmcts.net
-  apiHostname: dns-api.platform.hmcts.net
+  hostname: dns.platform.hmcts.net
   tls: false
 
 resources:

@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ template "pdns.fullname" . }}-ui
   labels:
-    app: {{ template "pdns.name" . }}-ui
+    app.kubernetes.io/name: {{ template "pdns.fullname" . }}-ui
     chart: {{ template "pdns.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -12,12 +12,12 @@ spec:
   replicas: {{ .Values.ui.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "pdns.name" . }}-ui
+      app.kubernetes.io/name: {{ template "pdns.fullname" . }}-ui
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "pdns.name" . }}-ui
+        app.kubernetes.io/name: {{ template "pdns.fullname" . }}-ui
         release: {{ .Release.Name }}
     spec:
       containers:
@@ -28,6 +28,10 @@ spec:
 {{- (include "pdns.environment" .Values.ui.environment) | indent 10 }}
           - name: PDNS_API_KEY
             value: {{ .Values.pdns.api.key }}
+          - name: PDNS_HOST
+            value: {{ .Release.Name }}-pdns-dns-api
+          - name: PDNS_PORT
+            value: '80'
           ports:
             - name: http
               containerPort: 5000
