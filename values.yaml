@@ -11,42 +11,55 @@ pdns:
   dnsupdate:
       enabled: no
 
-replicaCount: 1
+replicaCount: 2
+ui:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: hmcts/powerdns-admin@sha256:06d7f7b8e937e8bcc265fcbd897e2a6d7d1f4691dd75f532ab2b68b1d76acfb4
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 100m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  environment:
+    PDA_DB_USER: 'pdns'
+    PDA_DB_PASSWORD: 'pdns'
+    PDA_DB_NAME: 'pdns_ui'
+    PDA_DB_HOST: 'powerdns-postgresql'
+    PDA_DB_PORT: '5432'
+    SAML_ENABLED: 'true'
+    SAML_METADATA_URL: 'https://login.microsoftonline.com/rpe899.onmicrosoft.com/FederationMetadata/2007-06/FederationMetadata.xml'
+    SAML_GROUP_ADMIN_NAME: '356b57d8-84f4-457a-b49e-9500820c0b2d'
+    SAML_GROUP_TO_ACCOUNT_MAPPING: '9189d86a-e260-4c3d-8227-803123cdce84=cnp'
+    SAML_SP_ENTITY_ID: 'https://rpe899.onmicrosoft.com/384ce2b5-fbd1-43db-9621-80394401edfb'
+    PDA_SITE_NAME: 'HMCTS'
 
 image:
-  repository: rpedev.azurecr.io/psitrax/powerdns
+  repository: hmcts/powerdns-auth
   tag: 4.1.5r2
   pullPolicy: IfNotPresent
 
-tcpService:
+service:
   type: LoadBalancer
   loadBalancerIP: 10.160.180.2
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     # hopefully will work in next version of 1.12.x https://github.com/kubernetes/kubernetes/pull/74494
-    service.beta.kubernetes.io/azure-load-balancer-mixed-protocols: "true"
-
-udpService:
-  type: LoadBalancer
-  loadBalancerIP: 10.160.180.3
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-
-apiService:
-  annotations: {}
+   # service.beta.kubernetes.io/azure-load-balancer-mixed-protocols: "true"
 
 ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: traefik
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - dns.platform.hmcts.net
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  hostname: dns.platform.hmcts.net
+  tls: false
 
 resources:
   limits:
@@ -73,5 +86,8 @@ postgresql:
   postgresqlUsername: pdns
   postgresqlPassword: pdns
   postgresqlDatabase: pdns
+  initdbScripts:
+    init.sql: |-
+      CREATE DATABASE "pdns_ui" WITH OWNER = pdns ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   persistence:
     enabled: false

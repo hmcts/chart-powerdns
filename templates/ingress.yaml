@@ -1,13 +1,12 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "pdns.fullname" . -}}
-{{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app: {{ template "pdns.name" . }}
-    chart: {{ template "pdns.chart" . }}
+    app.kubernetes.io/name: {{ template "pdns.name" . }}
+    helm.sh/chart: {{ template "pdns.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
@@ -17,22 +16,16 @@ metadata:
 spec:
 {{- if .Values.ingress.tls }}
   tls:
-  {{- range .Values.ingress.tls }}
     - hosts:
-      {{- range .hosts }}
-        - {{ . }}
-      {{- end }}
-      secretName: {{ .secretName }}
-  {{- end }}
+        - {{ .Values.ingress.hostName }}
+      secretName: {{ .Values.ingress.tls.secretName }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ . }}
+    - host: {{ .Values.ingress.hostName }}
       http:
         paths:
-          - path: {{ $ingressPath }}
+          - path: /
             backend:
-              serviceName: {{ $fullName }}-api
-              servicePort: api
-  {{- end }}
+              serviceName: {{ $fullName }}-ui
+              servicePort: ui
 {{- end }}
