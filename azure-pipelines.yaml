@@ -13,6 +13,8 @@ resources:
     type: github
     name: hmcts/cnp-azuredevops-libraries
     endpoint: 'HMCTS Github'
+variables:
+  helmWait: 600
 
 jobs:
 - job: Validate
@@ -24,6 +26,7 @@ jobs:
       chartName: powerdns
       chartReleaseName: chart-powerdns-ci-test
       chartNamespace: chart-tests
+      helmInstallTimeout: $(helmWait)
 
 - job: Release
   # Make sure we have a tag to run this job
@@ -41,3 +44,4 @@ jobs:
       chartName: powerdns
       chartReleaseName: chart-powerdns
       chartNamespace: chart-tests
+      helmInstallTimeout: $(helmWait)
