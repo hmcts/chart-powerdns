@@ -41,8 +41,7 @@ spec:
               path: /
               port: http
             initialDelaySeconds: 30
-            periodSeconds: 30
-            failureThreshold: 6
+            periodSeconds: 60
           readinessProbe:
             httpGet:
               path: /
