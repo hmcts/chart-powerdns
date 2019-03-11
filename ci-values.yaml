@@ -1,0 +1,79 @@
+# Values for Azure DevOps build.
+# This is a YAML-formatted file.
+
+pdns:
+  api:
+    enabled: yes
+    key: PowerDNSAPI
+  webserver:
+    allowFrom: 0.0.0.0/0
+  dnsupdate:
+    enabled: no
+
+replicaCount: 2
+ui:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: hmcts/powerdns-admin@sha256:06d7f7b8e937e8bcc265fcbd897e2a6d7d1f4691dd75f532ab2b68b1d76acfb4
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 100m
+      memory: 1024Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  environment:
+    PDA_DB_USER: 'pdns'
+    PDA_DB_PASSWORD: 'pdns'
+    PDA_DB_NAME: 'pdns_ui'
+    PDA_DB_HOST: 'powerdns-postgresql'
+    PDA_DB_PORT: '5432'
+    SAML_ENABLED: 'false'
+    PDA_SITE_NAME: 'HMCTS'
+
+image:
+  repository: hmcts/powerdns-auth
+  tag: 4.1.5r2
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+   cpu: 100m
+   memory: 1024Mi
+  requests:
+   cpu: 100m
+   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+environment:
+  AUTOCONF: postgres
+  PGSQL_USER: pdns
+  PGSQL_PASS: pdns
+  PGSQL_HOST: powerdns-postgresql
+  PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
+
+postgresql:
+  postgresqlUsername: pdns
+  postgresqlPassword: pdns
+  postgresqlDatabase: pdns
+  initdbScripts:
+    init.sql: |-
+      CREATE DATABASE "pdns_ui" WITH OWNER = pdns ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  persistence:
+    enabled: false
