@@ -31,7 +31,7 @@ ui:
     PDA_DB_USER: 'pdns'
     PDA_DB_PASSWORD: 'pdns'
     PDA_DB_NAME: 'pdns_ui'
-    PDA_DB_HOST: 'powerdns-postgresql'
+    PDA_DB_HOST: 'chart-powerdns-ci-test-postgresql'
     PDA_DB_PORT: '5432'
     SAML_ENABLED: 'false'
     PDA_SITE_NAME: 'HMCTS'
@@ -65,7 +65,7 @@ environment:
   AUTOCONF: postgres
   PGSQL_USER: pdns
   PGSQL_PASS: pdns
-  PGSQL_HOST: powerdns-postgresql
+  PGSQL_HOST: chart-powerdns-ci-test-postgresql
   PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
 
 postgresql:
