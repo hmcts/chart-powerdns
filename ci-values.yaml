@@ -39,7 +39,7 @@ environment:
   PGSQL_USER: pdns
   PGSQL_PASS: pdns
   PGSQL_DB: postgres
-  PGSQL_HOST: pdns-chart-test.postgres.database.azure.com
+  PGSQL_HOST: chart-powerdns-ci-test-postgresql
   PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
 
 keyVault:
