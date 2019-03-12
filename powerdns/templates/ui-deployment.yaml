@@ -20,14 +20,40 @@ spec:
         app.kubernetes.io/name: {{ template "pdns.fullname" . }}-ui
         release: {{ .Release.Name }}
     spec:
+    {{- if .Values.db.external }}
+      volumes:
+        - name: ui-secrets
+          flexVolume:
+            driver: "azure/kv"
+            secretRef:
+              name: kvcreds
+            options:
+              usepodidentity: "false"
+              keyvaultname: {{ .Values.keyVault.vaultName}}
+              keyvaultobjectnames: {{ .Values.keyVault.usernameSecret }};{{ .Values.keyVault.dbPasswordSecret }}
+              keyvaultobjecttypes: secret
+              resourcegroup: {{ .Values.keyVault.resourceGroup }}
+              subscriptionid: {{ .Values.keyVault.subscriptionId }}
+              tenantid: {{ .Values.keyVault.tenantId }}
+    {{- end }}
       containers:
         - name: {{ .Chart.Name }}-ui
           image: {{ .Values.ui.image.repository }}
           imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
+        {{- if .Values.db.external }}
+          volumeMounts:
+          - name: ui-secrets
+            mountPath: /secrets
+            readOnly: true
+          command: |
+            ["/bin/sh", "-c", "export PDA_DB_USER=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernameSecret }}); \
+                               export PDA_DB_PASSWORD=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernamePassword }}); \
+                               /entrypoint.sh"]
+        {{- end }}
           env:
 {{- (include "pdns.environment" .Values.ui.environment) | indent 10 }}
           - name: PDNS_API_KEY
-            value: {{ .Values.pdns.api.key }}
+            value: {{ .Values.api.key }}
           - name: PDNS_HOST
             value: {{ .Release.Name }}-pdns-dns-api
           - name: PDNS_PORT

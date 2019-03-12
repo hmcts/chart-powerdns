@@ -20,11 +20,37 @@ spec:
         app.kubernetes.io/name: {{ template "pdns.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+    {{- if .Values.db.external }}
+      volumes:
+        - name: pdns-secrets
+          flexVolume:
+            driver: "azure/kv"
+            secretRef:
+              name: kvcreds
+            options:
+              usepodidentity: "false"
+              keyvaultname: {{ .Values.keyVault.vaultName}}
+              keyvaultobjectnames: {{ .Values.keyVault.usernameSecret }};{{ .Values.keyVault.dbPasswordSecret }}
+              keyvaultobjecttypes: secret
+              resourcegroup: {{ .Values.keyVault.resourceGroup }}
+              subscriptionid: {{ .Values.keyVault.subscriptionId }}
+              tenantid: {{ .Values.keyVault.tenantId }}
+    {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["--api={{ .Values.pdns.api.enabled }}", "--api-key={{ .Values.pdns.api.key }}", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from={{ .Values.pdns.webserver.allowFrom }}", "--dnsupdate={{ .Values.pdns.dnsupdate.enabled }}"]
+        {{- if .Values.db.external }}
+          volumeMounts:
+          - name: pdns-secrets
+            mountPath: /secrets
+            readOnly: true
+          command: |
+            ["/bin/sh", "-c", "export PDA_DB_USER=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernameSecret }}); \
+                               export PDA_DB_PASSWORD=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernamePassword }}); \
+                               /entrypoint.sh"]
+        {{- end }}
+          args: ["--api={{ .Values.api.enabled }}", "--api-key={{ .Values.api.key }}", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from={{ .Values.webserver.allowFrom }}", "--dnsupdate={{ .Values.dnsupdate.enabled }}"]
           env:
 {{- (include "pdns.environment" .Values.environment) | indent 10 }}
           ports:
