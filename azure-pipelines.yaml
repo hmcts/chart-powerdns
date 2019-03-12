@@ -27,6 +27,17 @@ jobs:
       chartReleaseName: chart-powerdns-ci-test
       chartNamespace: chart-tests
       helmInstallTimeout: $(helmWait)
+- job: ValidateExternalDB
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: steps/charts/validate.yaml@cnp-library
+    parameters:
+      chartName: powerdns
+      chartReleaseName: chart-powerdns-ci-test-externaldb
+      chartNamespace: chart-tests
+      helmInstallTimeout: $(helmWait)
+      valuesFile: ci-values-externaldb.yaml
 
 - job: Release
   # Make sure we have a tag to run this job
@@ -35,7 +46,9 @@ jobs:
         succeeded(),
         startsWith(variables['Build.SourceBranch'], 'refs/tags/')
       )
-  dependsOn: Validate
+  dependsOn:
+  - Validate
+  - ValidateExternalDB
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
