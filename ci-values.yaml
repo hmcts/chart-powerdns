@@ -71,7 +71,7 @@ ui:
     PDA_DB_USER: 'pdns'
     PDA_DB_PASSWORD: 'pdns'
     PDA_DB_NAME: 'postgres'
-    PDA_DB_HOST: 'pdns-chart-test.postgres.database.azure.com'
+    PDA_DB_HOST: 'chart-powerdns-ci-test-postgresql'
     PDA_DB_PORT: '5432'
     SAML_ENABLED: 'true'
     SAML_METADATA_URL: 'https://login.microsoftonline.com/rpe899.onmicrosoft.com/FederationMetadata/2007-06/FederationMetadata.xml'
