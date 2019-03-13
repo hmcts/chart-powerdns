@@ -1,7 +1,9 @@
 service:
   type: LoadBalancer
   #loadBalancerIP:
-
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    
 environment:
   AUTOCONF: postgres
   PGSQL_DB: postgres
@@ -27,7 +29,7 @@ ui:
     enabled: true
     annotations:
       kubernetes.io/ingress.class: traefik
-    hostname: chart-powerdns.service.core-compute-preview.internal
+    hostName: chart-powerdns.service.core-compute-preview.internal
     tls: false
 
 postgresql:

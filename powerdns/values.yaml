@@ -10,10 +10,10 @@ image:
 replicaCount: 1
 
 service:
-  type: LoadBalancer
-  loadBalancerIP: {}
+  type: ClusterIP
+  loadBalancerIP:
   annotations:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    #service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     # hopefully will work in next version of 1.12.x https://github.com/kubernetes/kubernetes/pull/74494
     # service.beta.kubernetes.io/azure-load-balancer-mixed-protocols: "true"
 
@@ -85,10 +85,10 @@ ui:
     PDA_SITE_NAME: 'HMCTS'
 
   ingress:
-    enabled: true
+    enabled: false
     annotations:
-      kubernetes.io/ingress.class: traefik
-    hostname: dns.platform.hmcts.net
+      #kubernetes.io/ingress.class: traefik
+    hostname:
     tls: false
 
 postgresql:
