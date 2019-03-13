@@ -14,7 +14,7 @@ resources:
     name: hmcts/cnp-azuredevops-libraries
     endpoint: 'HMCTS Github'
 variables:
-  helmWait: 600
+  helmWait: 300
 
 jobs:
 - job: Validate
@@ -38,6 +38,18 @@ jobs:
       chartNamespace: chart-tests
       helmInstallTimeout: $(helmWait)
       valuesFile: ci-values-externaldb.yaml
+- job: ValidateAll
+  displayName: Validate with loadbalancer, ingress and external database
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: steps/charts/validate.yaml@cnp-library
+    parameters:
+      chartName: powerdns
+      chartReleaseName: chart-powerdns-ci-test-all
+      chartNamespace: chart-tests
+      helmInstallTimeout: $(helmWait)
+      valuesFile: ci-values-all.yaml
 
 - job: Release
   # Make sure we have a tag to run this job

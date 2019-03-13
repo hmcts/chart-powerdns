@@ -46,14 +46,14 @@ environment:
   PDNS_UPDATE: 'no'
 
 keyVault:
-  vaultName: {}
-  resourceGroup: {}
-  subscriptionId: {}
-  tenantId: {}
+  vaultName:
+  resourceGroup:
+  subscriptionId:
+  tenantId:
   secrets:
-    dbUsernameSecret: {}
-    dbPasswordSecret: {}
-    pdnsApiKeySecret: {}
+    dbUsernameSecret:
+    dbPasswordSecret:
+    pdnsApiKeySecret:
 
 ui:
   enabled: true
