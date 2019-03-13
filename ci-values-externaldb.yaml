@@ -84,6 +84,9 @@ ui:
     SAML_GROUP_TO_ACCOUNT_MAPPING: '9189d86a-e260-4c3d-8227-803123cdce84=cnp'
     SAML_SP_ENTITY_ID: 'https://rpe899.onmicrosoft.com/384ce2b5-fbd1-43db-9621-80394401edfb'
     PDA_SITE_NAME: 'HMCTS'
+    PDNS_API_KEY: changeme
+    PDNS_HOST: 'chart-powerdns-ci-test-externaldb-dns-api'
+    PDNS_PORT: '80'
 
   ingress:
     enabled: false
