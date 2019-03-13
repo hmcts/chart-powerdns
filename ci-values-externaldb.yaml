@@ -60,7 +60,7 @@ ui:
   enabled: true
   replicaCount: 1
   image:
-    repository: hmcts/powerdns-admin@sha256:06d7f7b8e937e8bcc265fcbd897e2a6d7d1f4691dd75f532ab2b68b1d76acfb4
+    repository: hmcts/powerdns-admin:debug
     pullPolicy: IfNotPresent
   resources:
     limits:
