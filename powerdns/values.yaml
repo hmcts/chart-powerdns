@@ -92,6 +92,7 @@ ui:
     tls: false
 
 postgresql:
+  enabled: true
   postgresqlUsername: pdns
   postgresqlPassword: pdns
   postgresqlDatabase: pdns
