@@ -1,46 +1,8 @@
-# Default values for pdns.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-api:
-  enabled: yes
-  key: PowerDNSAPI
-
-webserver:
-  allowFrom: 0.0.0.0/0
-dnsupdate:
-  enabled: no
-
-image:
-  repository: hmcts/powerdns-auth
-  tag: 4.1.5r2-v0.0.1
-  pullPolicy: IfNotPresent
-
-replicaCount: 1
-
 service:
   type: ClusterIP
 
-resources:
-  limits:
-   cpu: 500m
-   memory: 1024Mi
-  requests:
-   cpu: 100m
-   memory: 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
 environment:
-  AUTOCONF: postgres
-  PGSQL_USER: pdns
-  PGSQL_PASS: pdns
-  PGSQL_DB: postgres
   PGSQL_HOST: chart-powerdns-ci-test-postgresql
-  PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
 
 keyVault:
   vaultName: infra-vault-nonprod
@@ -50,50 +12,11 @@ keyVault:
   secrets:
     dbUsernameSecret: chart-pdns-db-username
     dbPasswordSecret: chart-pdns-db-password
+    pdnsApiKeySecret: chart-pdns-api-key
 
 ui:
-  enabled: true
-  replicaCount: 1
-  image:
-    repository: hmcts/powerdns-admin:latest
-    pullPolicy: IfNotPresent
-  resources:
-    limits:
-      cpu: 500m
-      memory: 1024Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
   environment:
-    PDA_DB_USER: 'pdns'
-    PDA_DB_PASSWORD: 'pdns'
-    PDA_DB_NAME: 'pdns_ui'
     PDA_DB_HOST: 'chart-powerdns-ci-test-postgresql'
-    PDA_DB_PORT: '5432'
-    SAML_ENABLED: 'true'
-    SAML_METADATA_URL: 'https://login.microsoftonline.com/rpe899.onmicrosoft.com/FederationMetadata/2007-06/FederationMetadata.xml'
-    SAML_GROUP_ADMIN_NAME: '356b57d8-84f4-457a-b49e-9500820c0b2d'
-    SAML_GROUP_TO_ACCOUNT_MAPPING: '9189d86a-e260-4c3d-8227-803123cdce84=cnp'
-    SAML_SP_ENTITY_ID: 'https://rpe899.onmicrosoft.com/384ce2b5-fbd1-43db-9621-80394401edfb'
-    PDA_SITE_NAME: 'HMCTS'
 
   ingress:
-    enabled: false
-    annotations:
-      kubernetes.io/ingress.class: traefik
-    hostname: dns.platform.hmcts.net
-    tls: false
-
-postgresql:
-  enabled: true
-  postgresqlUsername: pdns
-  postgresqlPassword: pdns
-  postgresqlDatabase: pdns
-  initdbScripts:
-    init.sql: |-
-      CREATE DATABASE "pdns_ui" WITH OWNER = pdns ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  persistence:
     enabled: false

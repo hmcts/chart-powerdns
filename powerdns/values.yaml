@@ -1,14 +1,6 @@
 # Default values for pdns.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-api:
-  enabled: yes
-  key: PowerDNSAPI
-
-webserver:
-  allowFrom: 0.0.0.0/0
-dnsupdate:
-  enabled: no
 
 image:
   repository: hmcts/powerdns-auth
@@ -43,23 +35,31 @@ environment:
   AUTOCONF: postgres
   PGSQL_USER: pdns
   PGSQL_PASS: pdns
+  PGSQL_DB: postgres
   PGSQL_HOST: powerdns-postgresql
   PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
+  PDNS_API: 'yes'
+  PDNS_WEBSERVER: 'yes'
+  PDNS_WEBSERVER_PORT: '8081'
+  PDNS_WEBSERVER_ADDRESS: '0.0.0.0'
+  PDNS_WEBSERVER_ALLOW_FROM: '0.0.0.0/0'
+  PDNS_UPDATE: 'no'
 
 keyVault:
-  vaultName: infra-vault-nonprod
-  resourceGroup: cnp-core-infra
-  subscriptionId: 1c4f0704-a29e-403d-b719-b90c34ef14c9
-  tenantId: 531ff96d-0ae9-462a-8d2d-bec7c0b42082
+  vaultName: {}
+  resourceGroup: {}
+  subscriptionId: {}
+  tenantId: {}
   secrets:
-    dbUsernameSecret: chart-pdns-db-username
-    dbPasswordSecret: chart-pdns-db-password
-
+    dbUsernameSecret: {}
+    dbPasswordSecret: {}
+    pdnsApiKeySecret: {}
+    
 ui:
   enabled: true
   replicaCount: 1
   image:
-    repository: hmcts/powerdns-admin@sha256:06d7f7b8e937e8bcc265fcbd897e2a6d7d1f4691dd75f532ab2b68b1d76acfb4
+    repository: hmcts/powerdns-admin:latest
     pullPolicy: IfNotPresent
   resources:
     limits:

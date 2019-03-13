@@ -30,8 +30,8 @@ spec:
             options:
               usepodidentity: "false"
               keyvaultname: {{ .Values.keyVault.vaultName}}
-              keyvaultobjectnames: {{ .Values.keyVault.secrets.dbUsernameSecret }};{{ .Values.keyVault.secrets.dbPasswordSecret }}
-              keyvaultobjecttypes: secret;secret
+              keyvaultobjectnames: {{ .Values.keyVault.secrets.dbUsernameSecret }};{{ .Values.keyVault.secrets.dbPasswordSecret }};{{ .Values.keyVault.secrets.pdnsApiKeySecret }}
+              keyvaultobjecttypes: secret;secret;secret
               resourcegroup: {{ .Values.keyVault.resourceGroup }}
               subscriptionid: {{ .Values.keyVault.subscriptionId }}
               tenantid: {{ .Values.keyVault.tenantId }}
@@ -47,9 +47,9 @@ spec:
             readOnly: true
           command: ["/bin/sh", "-c", "export PGSQL_USER=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernameSecret }}); \
                      export PGSQL_PASS=$(cat /secrets/{{ .Values.keyVault.secrets.dbPasswordSecret }}); \
+                     export PDNS_API_KEY=$(cat /secrets/{{ .Values.keyVault.secrets.pdnsApiKeySecret }}); \
                      /bin/powerdns"]
         {{- end }}
-          args: ["--api={{ .Values.api.enabled }}", "--api-key={{ .Values.api.key }}", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from={{ .Values.webserver.allowFrom }}", "--dnsupdate={{ .Values.dnsupdate.enabled }}"]
           env:
 {{- (include "pdns.environment" .Values.environment) | indent 10 }}
           ports:
