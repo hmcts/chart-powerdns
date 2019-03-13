@@ -21,7 +21,6 @@ ui:
     PDA_DB_NAME: 'postgres'
     PDA_DB_HOST: 'pdns-chart-test.postgres.database.azure.com'
     PDNS_HOST: 'chart-powerdns-ci-test-externaldb-dns-api'
-    PDNS_PORT: '80'
 
   ingress:
     enabled: false
