@@ -30,7 +30,7 @@ spec:
             options:
               usepodidentity: "false"
               keyvaultname: {{ .Values.keyVault.vaultName}}
-              keyvaultobjectnames: {{ .Values.keyVault.secrets.dbUsernameSecret }};{{ .Values.keyVault.secrets.dbPasswordSecret }}
+              keyvaultobjectnames: {{ .Values.keyVault.secrets.dbUsernameSecret }};{{ .Values.keyVault.secrets.dbPasswordSecret }};{{ .Values.keyVault.secrets.pdnsApiKeySecret }}
               keyvaultobjecttypes: secret;secret
               resourcegroup: {{ .Values.keyVault.resourceGroup }}
               subscriptionid: {{ .Values.keyVault.subscriptionId }}
@@ -47,12 +47,11 @@ spec:
             readOnly: true
           command: ["/bin/sh", "-c", "export PDA_DB_USER=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernameSecret }}); \
                      export PDA_DB_PASSWORD=$(cat /secrets/{{ .Values.keyVault.secrets.dbPasswordSecret }}); \
+                     export PDNS_API_KEY=$(cat /secrets/{{ .Values.keyVault.secrets.pdnsApiKeySecret }}); \
                      /entrypoint.sh"]
         {{- end }}
           env:
 {{- (include "pdns.environment" .Values.ui.environment) | indent 10 }}
-          - name: PDNS_API_KEY
-            value: {{ .Values.api.key }}
           - name: PDNS_HOST
             value: {{ .Release.Name }}-pdns-dns-api
           - name: PDNS_PORT
