@@ -31,7 +31,7 @@ spec:
               usepodidentity: "false"
               keyvaultname: {{ .Values.keyVault.vaultName}}
               keyvaultobjectnames: {{ .Values.keyVault.secrets.dbUsernameSecret }};{{ .Values.keyVault.secrets.dbPasswordSecret }};{{ .Values.keyVault.secrets.pdnsApiKeySecret }}
-              keyvaultobjecttypes: secret;secret
+              keyvaultobjecttypes: secret;secret;secret
               resourcegroup: {{ .Values.keyVault.resourceGroup }}
               subscriptionid: {{ .Values.keyVault.subscriptionId }}
               tenantid: {{ .Values.keyVault.tenantId }}
