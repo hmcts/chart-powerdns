@@ -70,7 +70,7 @@ ui:
   environment:
     PDA_DB_USER: 'pdns'
     PDA_DB_PASSWORD: 'pdns'
-    PDA_DB_NAME: 'postgres'
+    PDA_DB_NAME: 'pdns_ui'
     PDA_DB_HOST: 'chart-powerdns-ci-test-postgresql'
     PDA_DB_PORT: '5432'
     SAML_ENABLED: 'true'
