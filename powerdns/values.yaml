@@ -15,11 +15,11 @@ image:
   tag: 4.1.5r2
   pullPolicy: IfNotPresent
 
-replicaCount: 2
+replicaCount: 1
 
 service:
   type: LoadBalancer
-  loadBalancerIP: 10.160.180.2
+  loadBalancerIP: {}
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     # hopefully will work in next version of 1.12.x https://github.com/kubernetes/kubernetes/pull/74494
@@ -27,7 +27,7 @@ service:
 
 resources:
   limits:
-   cpu: 100m
+   cpu: 500m
    memory: 1024Mi
   requests:
    cpu: 100m
@@ -46,9 +46,6 @@ environment:
   PGSQL_HOST: powerdns-postgresql
   PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
 
-db:
-  external: false
-
 keyVault:
   vaultName: infra-vault-nonprod
   resourceGroup: cnp-core-infra
@@ -60,13 +57,13 @@ keyVault:
 
 ui:
   enabled: true
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: hmcts/powerdns-admin@sha256:06d7f7b8e937e8bcc265fcbd897e2a6d7d1f4691dd75f532ab2b68b1d76acfb4
     pullPolicy: IfNotPresent
   resources:
     limits:
-      cpu: 100m
+      cpu: 500m
       memory: 1024Mi
     requests:
       cpu: 100m

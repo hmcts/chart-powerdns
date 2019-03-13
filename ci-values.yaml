@@ -55,7 +55,7 @@ ui:
   enabled: true
   replicaCount: 1
   image:
-    repository: hmcts/powerdns-admin:debug
+    repository: hmcts/powerdns-admin:latest
     pullPolicy: IfNotPresent
   resources:
     limits:

@@ -13,7 +13,9 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   type: {{ .Values.service.type }}
-  loadBalancerIP: 10.160.176.98
+  {{- if  .Values.service.LoadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.LoadBalancerIP }}
+  {{- end }}
   ports:
     - port: 53
       targetPort: 53
@@ -23,21 +25,3 @@ spec:
     app.kubernetes.io/name: {{ template "pdns.fullname" . }}
     release: {{ .Release.Name }}
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ template "pdns.fullname" . }}-dns-api
-  labels:
-    app.kubernetes.io/name: {{ template "pdns.fullname" . }}-dns-api
-    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}-dns-api
-    app.kubernetes.io/instance: {{ template "pdns.fullname" . }}-dns-api
-spec:
-  ports:
-    - name: dns-api
-      protocol: TCP
-      port: 80
-      targetPort: 8081
-  selector:
-    app.kubernetes.io/name: {{ template "pdns.fullname" . }}

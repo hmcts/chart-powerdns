@@ -36,8 +36,6 @@ affinity: {}
 
 environment:
   AUTOCONF: postgres
-  #PGSQL_USER: pdns
-  #PGSQL_PASS: pdns
   PGSQL_DB: postgres
   PGSQL_HOST: pdns-chart-test.postgres.database.azure.com
   PDNS_DEFAULT_SOA_NAME: root.platform.hmcts.net
@@ -60,7 +58,7 @@ ui:
   enabled: true
   replicaCount: 1
   image:
-    repository: hmcts/powerdns-admin:debug
+    repository: hmcts/powerdns-admin:latest
     pullPolicy: IfNotPresent
   resources:
     limits:
@@ -73,8 +71,6 @@ ui:
   tolerations: []
   affinity: {}
   environment:
-    #PDA_DB_USER: 'pdns'
-    #PDA_DB_PASSWORD: 'pdns'
     PDA_DB_NAME: 'postgres'
     PDA_DB_HOST: 'pdns-chart-test.postgres.database.azure.com'
     PDA_DB_PORT: '5432'
@@ -97,11 +93,3 @@ ui:
 
 postgresql:
   enabled: false
-#   postgresqlUsername: pdns
-#   postgresqlPassword: pdns
-#   postgresqlDatabase: pdns
-#   initdbScripts:
-#     init.sql: |-
-#       CREATE DATABASE "pdns_ui" WITH OWNER = pdns ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-#   persistence:
-#     enabled: false
