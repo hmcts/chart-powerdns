@@ -19,7 +19,7 @@ variables:
   serviceConnection: "azurerm-sandbox"
   aksResourceGroup: "cnp-aks-sandbox-rg"
   aksCluster: "cnp-aks-sandbox-cluster"
-  acrName: "hmcts"
+  acrName: "hmctsandbox"
 
 jobs:
 - job: Validate
