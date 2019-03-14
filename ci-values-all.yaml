@@ -1,9 +1,8 @@
 service:
   type: LoadBalancer
-  #loadBalancerIP:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-    
+
 environment:
   AUTOCONF: postgres
   PGSQL_DB: postgres
