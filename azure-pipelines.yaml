@@ -15,7 +15,7 @@ resources:
     endpoint: 'HMCTS Github'
 variables:
   helmWait: 300
-  helmVersion: 1.13.0
+  helmVersion: 2.13.0
   serviceConnection: "azurerm-sandbox"
   aksResourceGroup: "cnp-aks-sandbox-rg"
   aksCluster: "cnp-aks-sandbox-cluster"
