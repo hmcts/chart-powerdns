@@ -15,6 +15,11 @@ resources:
     endpoint: 'HMCTS Github'
 variables:
   helmWait: 300
+  helmVersion: 1.13.0
+  serviceConnection: "azurerm-sandbox"
+  aksResourceGroup: "cnp-aks-sandbox-rg"
+  aksCluster: "cnp-aks-sandbox-cluster"
+  acrName: "hmcts"
 
 jobs:
 - job: Validate
@@ -26,6 +31,11 @@ jobs:
       chartName: powerdns
       chartReleaseName: chart-powerdns-ci-test
       chartNamespace: chart-tests
+      helmVersion: $(helmVersion)
+      serviceConnection: $(serviceConnection)
+      aksResourceGroup: $(aksResourceGroup)
+      aksCluster: $(aksCluster)
+      acrName: $(acrName)
       helmInstallTimeout: $(helmWait)
 - job: ValidateExternalDB
   pool:
@@ -36,6 +46,11 @@ jobs:
       chartName: powerdns
       chartReleaseName: chart-powerdns-ci-test-externaldb
       chartNamespace: chart-tests
+      helmVersion: $(helmVersion)
+      serviceConnection: $(serviceConnection)
+      aksResourceGroup: $(aksResourceGroup)
+      aksCluster: $(aksCluster)
+      acrName: $(acrName)
       helmInstallTimeout: $(helmWait)
       valuesFile: ci-values-externaldb.yaml
 - job: ValidateAll
@@ -48,6 +63,11 @@ jobs:
       chartName: powerdns
       chartReleaseName: chart-powerdns-ci-test-all
       chartNamespace: chart-tests
+      helmVersion: $(helmVersion)
+      serviceConnection: $(serviceConnection)
+      aksResourceGroup: $(aksResourceGroup)
+      aksCluster: $(aksCluster)
+      acrName: $(acrName)
       helmInstallTimeout: $(helmWait)
       valuesFile: ci-values-all.yaml
 
