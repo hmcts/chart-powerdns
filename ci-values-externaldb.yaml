@@ -1,0 +1,29 @@
+service:
+  type: ClusterIP
+
+environment:
+  AUTOCONF: postgres
+  PGSQL_DB: postgres
+  PGSQL_HOST: pdns-chart-test.postgres.database.azure.com
+
+keyVault:
+  vaultName: infra-vault-nonprod
+  resourceGroup: cnp-core-infra
+  subscriptionId: 1c4f0704-a29e-403d-b719-b90c34ef14c9
+  tenantId: 531ff96d-0ae9-462a-8d2d-bec7c0b42082
+  secrets:
+    dbUsernameSecret: chart-pdns-db-username
+    dbPasswordSecret: chart-pdns-db-password
+    pdnsApiKeySecret: chart-pdns-api-key
+
+ui:
+  environment:
+    PDA_DB_NAME: 'postgres'
+    PDA_DB_HOST: 'pdns-chart-test.postgres.database.azure.com'
+    PDNS_HOST: 'chart-powerdns-ci-test-externaldb-dns-api'
+
+  ingress:
+    enabled: false
+
+postgresql:
+  enabled: false

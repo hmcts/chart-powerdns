@@ -1,5 +1,5 @@
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "pdns.fullname" . }}
@@ -20,11 +20,36 @@ spec:
         app.kubernetes.io/name: {{ template "pdns.fullname" . }}
         release: {{ .Release.Name }}
     spec:
+    {{- if not .Values.postgresql.enabled }}
+      volumes:
+        - name: pdns-secrets
+          flexVolume:
+            driver: "azure/kv"
+            secretRef:
+              name: kvcreds
+            options:
+              usepodidentity: "false"
+              keyvaultname: {{ .Values.keyVault.vaultName}}
+              keyvaultobjectnames: {{ .Values.keyVault.secrets.dbUsernameSecret }};{{ .Values.keyVault.secrets.dbPasswordSecret }};{{ .Values.keyVault.secrets.pdnsApiKeySecret }}
+              keyvaultobjecttypes: secret;secret;secret
+              resourcegroup: {{ .Values.keyVault.resourceGroup }}
+              subscriptionid: {{ .Values.keyVault.subscriptionId }}
+              tenantid: {{ .Values.keyVault.tenantId }}
+    {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["--api={{ .Values.pdns.api.enabled }}", "--api-key={{ .Values.pdns.api.key }}", "--webserver=yes", "--webserver-port=8081", "--webserver-address=0.0.0.0", "--webserver-allow-from={{ .Values.pdns.webserver.allowFrom }}", "--dnsupdate={{ .Values.pdns.dnsupdate.enabled }}"]
+        {{- if not .Values.postgresql.enabled }}
+          volumeMounts:
+          - name: pdns-secrets
+            mountPath: /secrets
+            readOnly: true
+          command: ["/bin/sh", "-c", "export PGSQL_USER=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernameSecret }}); \
+                     export PGSQL_PASS=$(cat /secrets/{{ .Values.keyVault.secrets.dbPasswordSecret }}); \
+                     export PDNS_API_KEY=$(cat /secrets/{{ .Values.keyVault.secrets.pdnsApiKeySecret }}); \
+                     /bin/powerdns"]
+        {{- end }}
           env:
 {{- (include "pdns.environment" .Values.environment) | indent 10 }}
           ports:
@@ -47,15 +72,3 @@ spec:
               port: api
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}

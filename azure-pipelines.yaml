@@ -1,0 +1,93 @@
+name: chart-powerdns pipeline
+trigger:
+  branches:
+    include:
+    - refs/tags/*
+pr:
+  branches:
+    include:
+    - master
+resources:
+  repositories:
+  - repository: cnp-library
+    type: github
+    name: hmcts/cnp-azuredevops-libraries
+    endpoint: 'HMCTS Github'
+variables:
+  helmWait: 300
+  helmVersion: 2.13.0
+  serviceConnection: "azurerm-nonprod"
+  aksResourceGroup: "cnp-aks-rg"
+  aksCluster: "cnp-aks-cluster"
+  acrName: "hmcts"
+
+jobs:
+- job: Validate
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: steps/charts/validate.yaml@cnp-library
+    parameters:
+      chartName: powerdns
+      chartReleaseName: chart-powerdns-ci-test
+      chartNamespace: chart-tests
+      helmVersion: $(helmVersion)
+      serviceConnection: $(serviceConnection)
+      aksResourceGroup: $(aksResourceGroup)
+      aksCluster: $(aksCluster)
+      acrName: $(acrName)
+      helmInstallTimeout: $(helmWait)
+- job: ValidateExternalDB
+  condition: false # set to 'true' to test against external DB
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: steps/charts/validate.yaml@cnp-library
+    parameters:
+      chartName: powerdns
+      chartReleaseName: chart-powerdns-ci-test-externaldb
+      chartNamespace: chart-tests
+      helmVersion: $(helmVersion)
+      serviceConnection: $(serviceConnection)
+      aksResourceGroup: $(aksResourceGroup)
+      aksCluster: $(aksCluster)
+      acrName: $(acrName)
+      helmInstallTimeout: $(helmWait)
+      valuesFile: ci-values-externaldb.yaml
+- job: ValidateAll
+  condition: false # set to 'true' to test against external DB with ILB and ingress
+  displayName: Validate with loadbalancer, ingress and external database
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: steps/charts/validate.yaml@cnp-library
+    parameters:
+      chartName: powerdns
+      chartReleaseName: chart-powerdns-ci-test-all
+      chartNamespace: chart-tests
+      helmVersion: $(helmVersion)
+      serviceConnection: $(serviceConnection)
+      aksResourceGroup: $(aksResourceGroup)
+      aksCluster: $(aksCluster)
+      acrName: $(acrName)
+      helmInstallTimeout: $(helmWait)
+      valuesFile: ci-values-all.yaml
+
+- job: Release
+  # Make sure we have a tag to run this job
+  condition: >
+    and(
+        succeeded(),
+        startsWith(variables['Build.SourceBranch'], 'refs/tags/')
+      )
+  dependsOn:
+  - Validate
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: steps/charts/release.yaml@cnp-library
+    parameters:
+      chartName: powerdns
+      chartReleaseName: chart-powerdns
+      chartNamespace: chart-tests
+      helmInstallTimeout: $(helmWait)

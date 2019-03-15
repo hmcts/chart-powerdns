@@ -1,5 +1,5 @@
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "pdns.fullname" . }}-ui
@@ -20,14 +20,38 @@ spec:
         app.kubernetes.io/name: {{ template "pdns.fullname" . }}-ui
         release: {{ .Release.Name }}
     spec:
+    {{- if not .Values.postgresql.enabled }}
+      volumes:
+        - name: ui-secrets
+          flexVolume:
+            driver: "azure/kv"
+            secretRef:
+              name: kvcreds
+            options:
+              usepodidentity: "false"
+              keyvaultname: {{ .Values.keyVault.vaultName}}
+              keyvaultobjectnames: {{ .Values.keyVault.secrets.dbUsernameSecret }};{{ .Values.keyVault.secrets.dbPasswordSecret }};{{ .Values.keyVault.secrets.pdnsApiKeySecret }}
+              keyvaultobjecttypes: secret;secret;secret
+              resourcegroup: {{ .Values.keyVault.resourceGroup }}
+              subscriptionid: {{ .Values.keyVault.subscriptionId }}
+              tenantid: {{ .Values.keyVault.tenantId }}
+    {{- end }}
       containers:
         - name: {{ .Chart.Name }}-ui
           image: {{ .Values.ui.image.repository }}
           imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
+        {{- if not .Values.postgresql.enabled }}
+          volumeMounts:
+          - name: ui-secrets
+            mountPath: /secrets
+            readOnly: true
+          command: ["/bin/sh", "-c", "export PDA_DB_USER=$(cat /secrets/{{ .Values.keyVault.secrets.dbUsernameSecret }}); \
+                     export PDA_DB_PASSWORD=$(cat /secrets/{{ .Values.keyVault.secrets.dbPasswordSecret }}); \
+                     export PDNS_API_KEY=$(cat /secrets/{{ .Values.keyVault.secrets.pdnsApiKeySecret }}); \
+                     /entrypoint.sh"]
+        {{- end }}
           env:
 {{- (include "pdns.environment" .Values.ui.environment) | indent 10 }}
-          - name: PDNS_API_KEY
-            value: {{ .Values.pdns.api.key }}
           - name: PDNS_HOST
             value: {{ .Release.Name }}-pdns-dns-api
           - name: PDNS_PORT
@@ -42,6 +66,7 @@ spec:
               port: http
             initialDelaySeconds: 30
             periodSeconds: 30
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /
@@ -50,15 +75,3 @@ spec:
             periodSeconds: 30
           resources:
 {{ toYaml .Values.ui.resources | indent 12 }}
-    {{- with .Values.ui.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.ui.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.ui.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}

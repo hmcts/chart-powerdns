@@ -35,21 +35,41 @@ The command removes all the Kubernetes components associated with the chart and 
 
 | Parameter                  | Description                         | Default                                                 |
 |----------------------------|-------------------------------------|---------------------------------------------------------|
-| `pdns.api.enabled`         | Should the PowerDNS API be enabled | `yes`
-| `pdns.api.key`             | PowerDNS API key | `PowerDNSAPI`
-| `pdns.webserver.allowFrom` | PowerDNS webserver allowed IP whitelist |  `0.0.0.0/0`
-| `pdns.dnsupdate.enabled`   | Should DNS UPDATE support be enabled | `no` |
-| `replicaCount`                 | Number of pdns nodes | `1` |
-| `image.repository`         | Image repository | `psitrax/powerdns` |
-| `image.tag`                | Image tag. | `4.1.2`|
+| `replicaCount`             | Number of pdns nodes | `1` |
+| `image.repository`         | Image repository | `hmcts/powerdns-auth` |
+| `image.tag`                | Image tag. | `4.1.5r2-v0.0.1`|
 | `image.pullPolicy`         | Image pull policy | `IfNotPresent` |
 | `service.type`             | Kubernetes service type | `ClusterIP` |
-| `ingress.enabled`          | Enables Ingress | `false` |
-| `ingress.annotations`      | Ingress annotations | `{}` |
-| `ingress.path`           | Custom path                       | `/`
-| `ingress.hosts`            | Ingress accepted hostnames | `chart-example.local` |
-| `ingress.tls`              | Ingress TLS configuration | `[]` |
-| `resources`                | CPU/Memory resource limits/requests | `{}` |
-| `nodeSelector`             | Node labels for pod assignment | `{}` |
-| `tolerations`              | Toleration labels for pod assignment | `[]` |
-| `affinity`                 | Affinity settings for pod assignment | `{}` |
+| `service.loadBalancerIP`   | Internal balancer IP for DNS service | `nil` |
+| `service.annotations`      | DNS service annotations | `{}` |
+| `resources.limits.cpu`     | DNS service CPU resource limit | `500m` |
+| `resources.limits.memory`  | DNS service memory resource limit | `1024Mi` |
+| `resources.requests.cpu`   | DNS service CPU requests | `500m` |
+| `resources.requests.memory`| DNS service memory requests | `1024Mi` |
+| `environment`              | Environment variables | `see values.yaml` |
+| `keyVault.vaultName`       | Keyvault name for use with keyvault-flexvol | `nil` |
+| `keyVault.resourceGroup`   | Keyvault resouce group for keyvault | `nil` |
+| `keyVault.subscriptionId`  | Keyvault subscription ID | `nil` |
+| `keyVault.tenantId`        | Keyvault tenant ID | `nil` |
+| `keyVault.secrets.dbUsernameSecret` | The name of the secret in Keyvault for the external DB username | `nil` |
+| `keyVault.secrets.dbPasswordSecret` | The name of the secret in Keyvault for the external DB password | `nil` |
+| `keyVault.secrets.pdnsApiKeySecret` | The name of the secret in Keyvault for the PowerDNS API key | `nil` |
+| `ui.enabled`               | Enable PowerDNS-Admin UI container | `true` |
+| `ui.replicaCount`          | number of UI replicas | `1` |
+| `ui.image.repository`      | PowerDNS-Admin image | `hmcts/powerdns-admin:latest` |
+| `ui.image.pullPolicy`      | PowerDNS-Admin image pull policy| `hmcts/powerdns-admin:latest` |
+| `ui.resources.limits.cpu`     | UI CPU resource limit | `500m` |
+| `ui.resources.limits.memory`  | UI memory resource limit | `1024Mi` |
+| `ui.resources.requests.cpu`   | UI CPU requests | `500m` |
+| `ui.resources.requests.memory`| UI memory requests | `128Mi` |
+| `ui.environment`           | UI container environment variables | `see values.yaml` |
+| `ui.ingress.enabled`       | Enables Ingress | `false` |
+| `ui.ingress.annotations`   | Ingress annotations | `kubernetes.io/ingress.class: traefik` |
+| `ui.ingress.hostName`      | Ingress hostname | `nil` |
+| `ingress.tls`              | Ingress TLS configuration | `false` |
+| `postgresql.enabled` | Enable optional PostgreSQL container | `true` |
+| `postgresql.postgresqlUsername` | PostgreSQL username | `v` |
+| `postgresql.postgresqlPassword` | PostgreSQL password | `pdns` |
+| `postgresql.postgresqlDatabase` | PostgreSQL database name | `pdns` |
+| `postgresql.initdbScripts.init.sql` | PostgreSQL init script | `CREATE DATABASE "pdns_ui" WITH OWNER = pdns ENCODING = 'UTF-8' CONNECTION LIMIT = -1;` |
+| `postgresql.persistence.enabled` | Enable persistence for PostgreSQL container | `false` |
