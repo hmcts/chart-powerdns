@@ -75,15 +75,3 @@ spec:
             periodSeconds: 30
           resources:
 {{ toYaml .Values.ui.resources | indent 12 }}
-    {{- with .Values.ui.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.ui.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.ui.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
