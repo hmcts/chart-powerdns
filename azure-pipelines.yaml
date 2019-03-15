@@ -38,6 +38,7 @@ jobs:
       acrName: $(acrName)
       helmInstallTimeout: $(helmWait)
 - job: ValidateExternalDB
+  condition: false # set to 'true' to test against external DB
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
@@ -54,6 +55,7 @@ jobs:
       helmInstallTimeout: $(helmWait)
       valuesFile: ci-values-externaldb.yaml
 - job: ValidateAll
+  condition: false # set to 'true' to test against external DB with ILB and ingress
   displayName: Validate with loadbalancer, ingress and external database
   pool:
     vmImage: 'Ubuntu 16.04'
