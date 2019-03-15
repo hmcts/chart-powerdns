@@ -82,7 +82,6 @@ jobs:
       )
   dependsOn:
   - Validate
-  - ValidateExternalDB
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
